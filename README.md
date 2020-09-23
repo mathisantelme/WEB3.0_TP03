@@ -208,7 +208,14 @@ WHERE
 La requête:
 
 ```SQL
+PREFIX ex:  <http://example.org#>
 
+SELECT DISTINCT ?x ?type
+WHERE { 
+    ?x a     ?type ;
+    ?link <http://www.univ-larochelle.fr> .
+    filter (?type != ex:Person) .
+}
 ```
 
 ---
@@ -230,7 +237,14 @@ La requête:
 La requête:
 
 ```SQL
+PREFIX ex:  <http://example.org#>
+PREFIX ulr: <http://www.univ-larochelle.fr#>
 
+SELECT ?x
+WHERE { 
+    ulr:RobertDupond  ex:manager-of ?employes.
+    ?employes         rdfs:member   ?x
+}
 ```
 
 ---
@@ -252,7 +266,14 @@ La requête:
 La requête:
 
 ```SQL
+PREFIX ex: <http://example.org#>
+PREFIX ulr: <http://www.univ-larochelle.fr#>
 
+CONSTRUCT {  ?employe ex:is-managed-by ?manager . }
+WHERE { 
+    ?manager  ex:manager-of ?employes.
+    ?employes rdfs:member   ?employe .
+}
 ```
 
 ---
@@ -288,7 +309,19 @@ La requête:
 La requête:
 
 ```SQL
+PREFIX ex:  <http://example.org#>
+PREFIX ulr: <http://www.univ-larochelle.fr#>
 
+SELECT ?teacher_name ?manager_name
+WHERE { 
+    ?teacher ex:employed-by <http://www.univ-larochelle.fr> ;
+    ex:name ?teacher_name .
+    OPTIONAL { 
+        ?manager ex:manager-of ?employes ;
+        ex:name       ?manager_name .
+        ?employes rdfs:member ?teacher
+    }
+ }
 ```
 
 ---
@@ -351,10 +384,41 @@ La requête:
 </results>
 ```
 
-La requête:
+La requête du premier résultat:
 
 ```SQL
+PREFIX ex:  <http://example.org#>
+SELECT DISTINCT ?name
 
+WHERE {
+    { 
+        [] ex:name ?name ;
+        ex:employed-by <http://www.univ-larochelle.fr> 
+    }
+    UNION
+    { 
+        [] ex:name ?name ;
+        ex:registered-at <http://www.univ-larochelle.fr> 
+    }
+}
+```
+
+La requête du second résultat:
+
+```SQL
+PREFIX ex: <http://example.org#>
+
+SELECT DISTINCT ?employe_name ?student_name
+WHERE { 
+    { 
+        [] ex:name ?employe_name ; 
+        ex:employed-by <http://www.univ-larochelle.fr> 
+    } 
+    UNION { 
+        [] ex:name ?student_name ;
+        ex:registered-at <http://www.univ-larochelle.fr> 
+    }
+}
 ```
 
 ---
