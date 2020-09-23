@@ -1,0 +1,96 @@
+<rdf:RDF xmlns="http://example.org#"
+    xmlns:ex="http://example.org#"
+    xmlns:log="http://www.w3.org/2000/10/swap/log#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:ulr="http://www.univ-larochelle.fr#">
+
+    <Teacher rdf:about="#_gw">
+        <employed-by rdf:resource="http://www.univ-larochelle.fr"/>
+        <name>Herve Blanchon</name>
+    </Teacher>
+
+    <Phd-Student rdf:about="#_gx">
+        <employed-by rdf:resource="http://www.univ-larochelle.fr"/>
+        <name>Fred Martin</name>
+        <registered-at rdf:resource="http://www.univ-larochelle.fr"/>
+    </Phd-Student>
+
+    <Student rdf:about="#_gy">
+        <name>Henri Durand</name>
+        <registered-at rdf:resource="http://www.univ-larochelle.fr"/>
+    </Student>
+
+    <Teacher rdf:about="#_gz">
+        <employed-by rdf:resource="http://www.univ-larochelle.fr"/>
+        <manager-of>
+          <rdf:Bag>
+            <rdf:li rdf:resource="#_gx"/>
+            <rdf:li rdf:resource="#_gw"/>
+          </rdf:Bag>
+        </manager-of>
+        <name>Robert Dupond</name>
+    </Teacher>
+
+    <rdfs:Class rdf:about="http://example.org#Educational-institution">
+        <rdfs:subClassOf rdf:resource="http://example.org#Institution"/>
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://example.org#Institution">
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://example.org#Msc-Student">
+        <rdfs:comment>An Msc student is not a teacher</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="http://example.org#Student"/>
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://example.org#Person">
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://example.org#Phd-Student">
+        <rdfs:comment>A student who is also a teacher is a PhD Student</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="http://example.org#Student"/>
+        <rdfs:subClassOf rdf:resource="http://example.org#Teacher"/>
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://example.org#Research-institution">
+        <rdfs:subClassOf rdf:resource="http://example.org#Institution"/>
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://example.org#Student">
+        <rdfs:subClassOf rdf:resource="http://example.org#Person"/>
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://example.org#Teacher">
+        <rdfs:subClassOf rdf:resource="http://example.org#Person"/>
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://example.org#University">
+        <rdfs:subClassOf rdf:resource="http://example.org#Educational-institution"/>
+        <rdfs:subClassOf rdf:resource="http://example.org#Research-institution"/>
+    </rdfs:Class>
+
+    <rdf:Property rdf:about="http://example.org#employed-by">
+        <rdfs:domain rdf:resource="http://example.org#Person"/>
+        <rdfs:range rdf:resource="http://example.org#Institution"/>
+    </rdf:Property>
+
+    <rdf:Property rdf:about="http://example.org#manager-of">
+        <rdfs:domain rdf:resource="http://example.org#Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag"/>
+    </rdf:Property>
+
+    <rdf:Property rdf:about="http://example.org#name">
+        <rdfs:domain rdf:resource="http://example.org#Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </rdf:Property>
+
+    <rdf:Property rdf:about="http://example.org#registered-at">
+        <rdfs:domain rdf:resource="http://example.org#Person"/>
+        <rdfs:range rdf:resource="http://example.org#University"/>
+    </rdf:Property>
+
+    <University rdf:about="http://www.univ-larochelle.fr">
+    </University>
+</rdf:RDF>
+
