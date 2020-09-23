@@ -31,12 +31,22 @@
 La requête:
 
 ```SQL
+PREFIX ex:  <http://example.org#>
 
+SELECT ?x
+WHERE
+{
+    ?x rdf:type ex:Teacher .
+}
 ```
 
-> *Est-ce que CORESE supporte l’inférence ?*
+> *Est-ce que **CORESE** supporte l’inférence ?*
+
+Oui car sinon on n'aurait pas accès à toutes les données que l'on souhaite.
 
 > *Que se passe-t-il lorsque l'on décoche l'option **RDFS** dans le menu engine et que l'on exécute de nouveau la requête ?*
+
+Il nous manque le résultat suivante: `<binding name='x'><uri>http://www.univ-larochelle.fr#FredMartin</uri></binding>`, ce qui prouve bien que **CORESE** supporte l'inférence.
 
 ---
 
@@ -98,7 +108,14 @@ La requête:
 La requête:
 
 ```SQL
+PREFIX ex:  <http://example.org#>
 
+SELECT ?x ?type
+WHERE
+{ 
+    ?x rdf:type ?type .
+    ?x ex:employed-by <http://www.univ-larochelle.fr> .
+}
 ```
 
 ---
@@ -137,7 +154,15 @@ La requête:
 La requête:
 
 ```SQL
+PREFIX ex:  <http://example.org#>
 
+SELECT ?x ?type
+WHERE
+{ 
+    ?x rdf:type ?type .
+    ?x ex:employed-by <http://www.univ-larochelle.fr>
+    FILTER (?type != ex:Person)
+}
 ```
 
 ---
