@@ -422,3 +422,261 @@ WHERE {
 ```
 
 ---
+
+## 2. Utilisation d’une base RDF de taille importante avec **SPARQL**
+
+La plate-forme Jamendo offre différents services de diffusion de musique. Une grande partie de son catalogue est disponible sous forme de triplets RDF (1100000 triplets) sur le site dbtune.org et s’appuie sur plusieurs schémas dont « Music Ontology ».
+À partir des fichiers `jamendo.rdf` (données) et `musicontology-level1.rdfs` (schéma) présents dans l’archive du TP écrire les requêtes **SPARQL** permettant d’obtenir les informations suivantes en vous limitant à 20 résultats:
+Avant de débuter les requêtes, regarder le schéma **RDFS**, il est relativement important mais il est structuré: d’abord sont présentées les classes puis les relations entre ces classes.
+
+> **1.** *Donner les noms des artistes musicaux:*
+
+```SQL
+PREFIX bbc: <http://purl.org/ontology/mo/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT ?artist_name
+WHERE { 
+    ?artist a bbc:MusicArtist .
+    ?artist foaf:name ?artist_name
+}
+LIMIT 20
+```
+
+*On obtient les résultats suivants:*
+
+```
+Cicada
+Hace Soul
+vincent j
+NoU
+Margin of Safety
+Bobywan
+Les Clip’s
+Carter Hotel
+La Tumba
+King Dubby
+vavrek
+Suerte
+My Name Is Fantastik
+KEPAY
+t r y ^ d
+Buzzworkers
+Mr Nuts
+Stian
+isotrak
+433 erOs
+```
+
+---
+
+> **2.** *Pour chaque artiste, donner par ordre alphabétique sur le nom de l’artiste le nom de
+ses albums;*
+
+```SQL
+PREFIX mo: <http://purl.org/ontology/mo/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+
+SELECT ?artist_name ?record_name
+WHERE { 
+    ?artist a mo:MusicArtist .
+    ?artist foaf:name ?artist_name .
+    ?artist foaf:made ?record .
+    ?record a mo:Record .
+    ?record dc:title ?record_name
+}
+ORDER BY ?artist_name
+LIMIT 20
+```
+
+*On obtient les résultats suivants:*
+
+```
+! M U H ? | HUM
+# NUTSHELL # | # DRZWI #
+#2 Orchestra | Mercutio’s Dead
+#2 Orchestra | Being Alive Killed The Best In Me
+#Blockout | Get High
+#Dance 75# | #Dance 75# Volume 1
+#Dance 75# | Dakadium
+#Dance 75# | #Dance 75 Mixtape#
+#Dance 75# | Can You Do Better ?
+#NarNaoud# | Green Vision
+#ZedMeta# | Petit aperÃ§u
+#Zorglups# | First Demo
+$ArnoDj13$ | $ArnoDj13$
+&amp;ND | Hit the road
+(((Niko))) | Geometry Of Art
+(own+line) | Down
+* Q u i r y * | FÃc lin Pour L’Autre
+* Q u i r y * | Soeurs Siamoises
+-;~Â◦Â§)[ k.ROCKSHIRE ](Â§Â◦~;- | the doggystyle EP
+-=Kwada=- | DEMO
+```
+
+---
+
+> **3.** *Pour l’artiste 2MaTao, donner le nom de ses albums;*
+
+```SQL
+PREFIX mo: <http://purl.org/ontology/mo/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+
+SELECT ?artist_name ?record_name
+WHERE { 
+    ?artist a mo:MusicArtist .
+    ?artist foaf:name ?artist_name .
+    ?artist foaf:made ?record .
+    ?record a mo:Record .
+    ?record dc:title ?record_name
+    FILTER regex(?artist_name,"2MaTao*")
+}
+LIMIT 50
+```
+
+*On obtient les résultats suivants:*
+
+```
+2MaTao | Synthesizer Project
+2MaTao | Synthesizer Project vol.2
+```
+
+---
+
+> **4.** *En étudiant la spécification **SPARQL** 1.1, déterminer comment donner, pour chaque
+artiste, le nombre d’albums qu’il a enregistré;*
+
+```SQL
+PREFIX mo: <http://purl.org/ontology/mo/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+
+SELECT ?artist_name (COUNT(?record_name) AS ?nb)
+WHERE { 
+    ?artist a mo:MusicArtist .
+    ?artist foaf:name ?artist_name .
+    ?artist foaf:made ?record .
+    ?record a mo:Record .
+    ?record dc:title ?record_name
+}
+GROUP BY ?artist_name
+LIMIT 20
+```
+
+*On obtient les résultats suivants:*
+
+```
+! M U H ? | 1
+# NUTSHELL # | 1
+#2 Orchestra | 2
+#Blockout | 1
+#Dance 75# | 4
+#NarNaoud# | 1
+#ZedMeta# | 1
+#Zorglups# | 1
+$ArnoDj13$ | 1
+&amp;ND | 1
+(((Niko))) | 1
+(own+line) | 1
+* Q u i r y * | 2
+-;~Â◦Â§)[ k.ROCKSHIRE ](Â§Â◦~;- | 1
+-=Kwada=- | 1
+-DEMO- | 1
+-mystery- | 3
+...ChArLy’s... | 1
+...anabase* | 1
+...with sad adieus | 1
+```
+
+---
+
+> **5.** *Donner le nom des albums « taggés » acoustique mais pas electro;*
+
+```SQL
+PREFIX mo: <http://purl.org/ontology/mo/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX tags: <http://www.holygoat.co.uk/owl/redwood/0.1/tags/>
+
+SELECT ?record_name
+WHERE {  
+    ?record a mo:Record .
+    ?record dc:title ?record_name
+    ?record tags:taggedWithTag <http://dbtune.org/jamendo/tag/acoustique>
+    FILTER NOT EXISTS {  ?record  tags:taggedWithTag <http://dbtune.org/jamendo/tag/electro> }
+
+}
+ORDER BY ?record_name
+LIMIT 20
+```
+
+*On obtient les résultats suivants:*
+
+```
+" il me manque..."
+.::le canzoni di A+ebu)_AYris::.
+15 court-mÃc trages
+1Ãc res Prises
+2006
+3 Obras de Teatro
+5 Songs
+A Jour
+A MIS HERMANOS
+A glimpse inside the bubble
+A l’aube
+A night in Istanbul
+A tranparent pain
+Accords et A,mes
+Acoustic Demo
+After Infinity 1
+After Infinity III
+Amour critique
+Andrew, Just
+AprÃ¨s la chute
+```
+
+---
+
+> **6.** *Donner le nom de toutes les propriétés associées à la classe MusicArtist;*
+
+```SQL
+PREFIX mo: <http://purl.org/ontology/mo/>
+
+SELECT DISTINCT ?label1 ?label2
+WHERE {
+    { 
+        ?p a rdf:Property .
+        ?p rdfs:label ?label1 .
+        ?p rdfs:domain mo:MusicArtist .
+    }
+    UNION { 
+        ?p a rdf:Property .
+        ?p rdfs:label ?label2 .
+        ?p rdfs:range mo:MusicArtist .
+    }
+}
+LIMIT 20
+```
+
+*On obtient les résultats suivants:*
+
+```
+biography
+compiled
+discography
+djmixed
+fanpage
+remixed
+sampled
+supporting_musician
+compiler
+djmixed_by
+remixer
+sampler
+supporting_musician
+tribute_to
+```
+
+---
